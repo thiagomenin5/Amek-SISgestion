@@ -2,6 +2,13 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+// Importar configuración de base de datos
+const { conectarDB } = require('./config/database');
+
+// Middleware para parsear JSON
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 const amekRoutes = require('./routes/amek');
 const productosRoutes = require('./routes/productos');
@@ -24,6 +31,12 @@ app.use('/ventas', ventasRoutes);
 
 
 
-app.listen(port, ()=>{
-    console.log(`Servidor corriendo en http://localhost:${port}`)
-})
+// Conectar a la base de datos y luego iniciar el servidor
+conectarDB().then(() => {
+  app.listen(port, () => {
+    console.log(`🚀 Servidor corriendo en http://localhost:${port}`);
+    console.log(`📊 Base de datos conectada y sincronizada`);
+  });
+}).catch(error => {
+  console.error('❌ Error al iniciar el servidor:', error);
+});
